@@ -108,7 +108,7 @@ async def chat(request: Request, body: ChatRequest) -> ChatResponse:
 
 
 @app.post("/incidents/{name}/enable")
-async def enable_incident(name: str) -> JSONResponse:
+async def enable_incident(request: Request, name: str) -> JSONResponse:
     try:
         enable(name)
         audit_incident(name=name, action="enable", correlation_id=request.state.correlation_id)
@@ -119,7 +119,7 @@ async def enable_incident(name: str) -> JSONResponse:
 
 
 @app.post("/incidents/{name}/disable")
-async def disable_incident(name: str) -> JSONResponse:
+async def disable_incident(request: Request, name: str) -> JSONResponse:
     try:
         disable(name)
         audit_incident(name=name, action="disable", correlation_id=request.state.correlation_id)
