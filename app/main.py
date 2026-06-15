@@ -15,7 +15,7 @@ from .metrics import record_error, snapshot
 from .middleware import CorrelationIdMiddleware
 from .pii import hash_user_id, summarize_text
 from .schemas import ChatRequest, ChatResponse
-from .tracing import tracing_enabled
+from .tracing import flush_traces, tracing_enabled
 
 configure_logging()
 log = get_logger()
@@ -34,6 +34,11 @@ async def startup() -> None:
     )
 
 
+@app.on_event("shutdown")
+async def shutdown() -> None:
+    flush_traces()
+
+
 @app.get("/health")
 async def health() -> dict:
     return {"ok": True, "tracing_enabled": tracing_enabled(), "incidents": status()}
@@ -47,6 +52,12 @@ async def metrics() -> dict:
 @app.get("/dashboard", response_class=HTMLResponse)
 async def dashboard() -> HTMLResponse:
     return HTMLResponse(content=get_dashboard_html())
+
+
+@app.post("/traces/flush")
+async def traces_flush() -> dict:
+    flush_traces()
+    return {"ok": True, "message": "traces flushed to Langfuse"}
 
 
 @app.post("/chat", response_model=ChatResponse)
