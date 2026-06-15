@@ -12,7 +12,7 @@
 
 ## 2. Individual Performance (Auto-Verified)
 - [VALIDATE_LOGS_FINAL_SCORE]: 100/100
-- [TOTAL_TRACES_COUNT]: 10 (generated via `python scripts/load_test.py --concurrency 3`)
+- [TOTAL_TRACES_COUNT]: 13 (10 normal + 3 rag_slow incident traces — see docs/screenshots/trace-list.png)
 - [PII_LEAKS_FOUND]: 0
 - [QUALITY_AVG]: 0.9 (above SLO target 0.75)
 - [LATENCY_P95_MS]: 150 (well below SLO 3000ms)
@@ -23,13 +23,13 @@
 ## 3. Technical Evidence (Group)
 
 ### 3.1 Logging & Tracing
-- [EVIDENCE_CORRELATION_ID_SCREENSHOT]: [Screenshot: response header x-request-id = req-XXXXXXXX, log line shows matching correlation_id]
-- [EVIDENCE_PII_REDACTION_SCREENSHOT]: [Screenshot: log payload shows [REDACTED_EMAIL] and [REDACTED_CREDIT_CARD] instead of raw values]
-- [EVIDENCE_TRACE_WATERFALL_SCREENSHOT]: [Screenshot from Langfuse trace waterfall]
-- [TRACE_WATERFALL_EXPLANATION]: The `retrieve()` span under `LabAgent.run` shows doc_count and query_preview metadata. When rag_slow incident is active, this span alone accounts for >2500ms of the total latency, making it the clear bottleneck visible in the waterfall.
+- [EVIDENCE_CORRELATION_ID_SCREENSHOT]: docs/screenshots/logs-pii-redacted.png
+- [EVIDENCE_PII_REDACTION_SCREENSHOT]: docs/screenshots/logs-pii-redacted.png
+- [EVIDENCE_TRACE_WATERFALL_SCREENSHOT]: docs/screenshots/trace-waterfall.png
+- [TRACE_WATERFALL_EXPLANATION]: Trace `run` (LabAgent.run) hiển thị đầy đủ input/output, latency 0.15s trong điều kiện bình thường. Khi bật incident `rag_slow`, span `run` kéo dài lên ~2.65s — toàn bộ thời gian thừa nằm ở bước retrieve() bị delay 2.5s nhân tạo. Đây là bằng chứng trực quan của root cause trong trace waterfall (xem docs/screenshots/trace-rag-slow.png).
 
 ### 3.2 Dashboard & SLOs
-- [DASHBOARD_6_PANELS_SCREENSHOT]: [Path to image]
+- [DASHBOARD_6_PANELS_SCREENSHOT]: docs/screenshots/dashboard.png
 - [SLO_TABLE]:
 | SLI | Target | Window | Current Value |
 |---|---:|---|---:|
@@ -39,7 +39,7 @@
 | Quality Score Avg | > 0.75 | 28d | see /metrics |
 
 ### 3.3 Alerts & Runbook
-- [ALERT_RULES_SCREENSHOT]: [Screenshot of config/alert_rules.yaml showing 4 alert rules]
+- [ALERT_RULES_SCREENSHOT]: docs/screenshots/alert-rules.png
 - [SAMPLE_RUNBOOK_LINK]: docs/alerts.md#1-high-latency-p95
 
 ---
