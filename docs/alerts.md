@@ -26,6 +26,19 @@
   - disable failing tool
   - retry with fallback model
 
+## 4. Quality score degraded
+- Severity: P2
+- Trigger: `quality_score_avg < 0.6 for 15m`
+- Impact: answer quality below acceptable threshold
+- First checks:
+  1. Review traces with lowest `quality_score` in last 30m
+  2. Check if `rag_slow` incident is active (poor retrieval → low quality)
+  3. Compare `doc_count` in traces – zero docs → score drops
+- Mitigation:
+  - re-enable retrieval source if toggled off
+  - widen RAG query or lower similarity threshold
+  - fallback to a more capable model for quality-critical features
+
 ## 3. Cost budget spike
 - Severity: P2
 - Trigger: `hourly_cost_usd > 2x_baseline for 15m`
